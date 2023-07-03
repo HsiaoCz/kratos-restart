@@ -20,5 +20,15 @@ func NewStudentRepo(data *Data, logger log.Logger) biz.StudentRepo {
 }
 
 func (sr *studentRepo) GetStudent(ctx context.Context, id int32) (*biz.Student, error) {
-	return nil, nil
+	var stu biz.Student
+	sr.data.DB.Where("id=?", id).First(&stu)
+	sr.log.WithContext(ctx).Info("DB:GetStudent,id:", id)
+	return &biz.Student{
+		ID:        stu.ID,
+		Name:      stu.Name,
+		Status:    stu.Status,
+		Info:      stu.Info,
+		UpdatedAt: stu.UpdatedAt,
+		CreatedAt: stu.CreatedAt,
+	}, nil
 }
