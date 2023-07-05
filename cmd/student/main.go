@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"student/internal/conf"
+	"student/internal/server/pkg/tracer"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
@@ -13,6 +14,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"go.opentelemetry.io/otel"
 
 	_ "go.uber.org/automaxprocs"
 )
@@ -84,4 +86,14 @@ func main() {
 	if err := app.Run(); err != nil {
 		panic(err)
 	}
+	url := "http://192.168.0.103:14268/api/trace"
+	Name = "kratos.service.student"
+	id = "kratos.id.student.1"
+	Version = "test-V0.0.1"
+	traceconf := tracer.NewConf(Name, id, Version, url)
+	tp, err := traceconf.TracerProvider()
+	if err != nil {
+		panic(err)
+	}
+	otel.SetTracerProvider(tp) //设置全局链路追踪
 }
